@@ -1,53 +1,36 @@
-This project automates AWS infrastructure provisioning using Terraform, featuring reusable modules for VPC, EC2, and S3 resources. Integrated with CI/CD pipelines for automated infrastructure testing and deployment.
-## 🎯 Features
-- **Infrastructure as Code**: Complete AWS environment defined in Terraform
-- **Reusable Modules**: Modular design for VPC, EC2, and S3
-- **CI/CD Integration**: Automated testing and deployment via GitHub Actions
-- **Security Best Practices**: IAM roles, security groups, encrypted resources
-- **High Availability**: Multi-AZ deployment with public/private subnets
-## 🏗️ Architecture
-┌─────────────────────────────────────────┐
-│ AWS Infrastructure │
-├─────────────────────────────────────────┤
-│ VPC (10.0.0.0/16) │
-│ ├── Public Subnets (10.0.1.0/24) │
-│ │ └── EC2 Instances (Web Servers) │
-│ ├── Private Subnets (10.0.2.0/24) │
-│ └── S3 Bucket (Storage) │
-└─────────────────────────────────────────┘
+# AWS Infrastructure Automation
 
-## 📁 Project Structure
-terraform-aws-automation/
-├── main.tf # Main configuration
-├── variables.tf # Input variables
-├── outputs.tf # Output values
-├── versions.tf # Terraform versions
-├── terraform.tfvars # Variable values (gitignored)
-├── modules/ # Reusable modules
-│ ├── vpc/ # VPC module
-│ ├── ec2/ # EC2 module
-│ └── s3/ # S3 module
-└── .github/workflows/ # CI/CD pipelines
+Terraform modules for VPC, EC2, and S3, with a GitHub Actions workflow for infrastructure operations.
 
-## 🚀 Quick Start
+[Reviewer walkthrough](INTERVIEW.md) · [Workflow](.github/workflows/terraform-ci.yml)
 
-### Prerequisites
-- AWS Account with IAM credentials
-- Terraform v1.5.0+
-- AWS CLI configured
-- GitHub Account (for CI/CD)
+## Source layout
 
-### 1. Clone and Configure
+| Path | Purpose |
+| --- | --- |
+| [main.tf](main.tf) | Root module composition |
+| [modules/vpc](modules/vpc) | Network resources |
+| [modules/ec2](modules/ec2) | Compute resources and initialization |
+| [modules/s3](modules/s3) | Object storage resources |
+| [backend.tf](backend.tf) | State backend configuration |
+| [terraform.tfvars.example](terraform.tfvars.example) | Example input values |
+
+## Review before execution
+
+Clone the repository and inspect the backend, variables, and modules first:
+
 ```bash
-git clone <repository-url>
-cd terraform-aws-automation
+git clone https://github.com/Vishnu063/AWS-Infrastructure-Automation-Project.git
+cd AWS-Infrastructure-Automation-Project
+terraform fmt -check -recursive
+terraform init -backend=false
+terraform validate
+```
 
-# Copy example variables file
-cp terraform.tfvars.example terraform.tfvars
+These commands require Terraform and provider downloads. They are suggested local checks, not newly verified results. Backend-free initialization does not validate your remote state access or prove that an apply will succeed.
 
-# Edit terraform.tfvars with your values
-nano terraform.tfvars
-terraform init
-ẻxit
+The existing workflow includes an automatic apply on pushes to main. Review its credentials, backend, plan handling, and approval policy before enabling it in an account. Do not push infrastructure changes merely to try this demo. No cloud resources were provisioned during this documentation review.
 
-eof
+## Interview discussion
+
+Explain module boundaries, variable validation, state locking, permissions, and the plan you would review before applying. Demonstrate a real validation or plan result using an authorized disposable environment. Resource definitions alone do not establish high availability, production security, or free-tier eligibility.
